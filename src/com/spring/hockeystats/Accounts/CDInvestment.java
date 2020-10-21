@@ -4,9 +4,9 @@ import com.spring.hockeystats.Bank.Client;
 
 public class CDInvestment extends InvestmentAccount implements Account {
     private int timeFrame;
-    private char timePeriod; //D = day, W = week, M = Month, Q = quarter, Y = Year
+    private String timePeriod; //D = day, W = week, M = Month, Q = quarter, Y = Year
 
-    public CDInvestment(int balance, int accountNum, Client owner, int timeFrame, char timePeriod) {
+    public CDInvestment(int balance, int accountNum, Client owner, int timeFrame, String timePeriod) {
         super(balance, accountNum, owner,10 );
         this.timeFrame = timeFrame;
         this.timePeriod = timePeriod;

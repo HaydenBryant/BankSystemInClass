@@ -3,6 +3,7 @@ package com.spring.hockeystats.Bank;
 import com.spring.hockeystats.Accounts.*;
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Bank {
     private HashMap<String, Client> clients;
@@ -19,67 +20,46 @@ public class Bank {
         clients.put(clientId, new Client(fname, lname, clientId));
     }
 
-    public void addAccount(int balance, String clientId, String type) {
-        int accountNumber = (++accountCount);
-        Account account;
-        switch (type){
-            case "checking":
-                account = createCheckingAccount(balance, accountNumber, clientId);
-                break;
-            case "bank":
-                account = createBankAccount(balance, accountNumber, clientId);
-                break;
-            case "cd":
-                account = createCDAccount(balance, accountNumber, clientId);
-                break;
-            case "investment":
-                account = createInvestmentAccount(balance, accountNumber, clientId);
-                break;
-            case "savings":
-                account = createSavingsAccount(balance, accountNumber, clientId);
-                break;
+    public void addAccount(int balance, String clientId, String accountType) {
+        Client client = clients.get(clientId);
+        if (client == null) {
+            System.out.println("ERROR: Invalid ClientID");
+            return;
         }
-        accounts.put(accountNumber, account);
+        int accountNumber = (++accountCount);
+        Account newAccount = createAccount(balance, client, accountType, accountNumber);
+        accounts.put(accountNumber, newAccount);
+        client.addAccount(newAccount);
     }
 
-    private Account createCheckingAccount(int balance, int accountNumber, String clientId){
-        CheckingAccount account = new CheckingAccount(
-                balance,
-                accountNumber,
-                clients.get(clientId)
-        );
-        return account;
+    public Account createAccount(int balance, Client client, String type, int accountNumber) {
+        Scanner scan = new Scanner(System.in);
+
+        switch (type){
+            case "checking":
+                return new CheckingAccount(balance, accountNumber, client);
+
+            case "cd":
+                System.out.println("What is the timeframe?: ");
+                int timeFrame = scan.nextInt();
+                System.out.println("What is the time period?: ");
+                String timePeriod = scan.nextLine();
+                return new CDInvestment(balance, accountNumber, client, timeFrame, timePeriod);
+
+            case "investment":
+                System.out.println("What is the interest rate?: ");
+                int investInterestRate = scan.nextInt();
+                return new InvestmentAccount(balance, accountNumber, client, investInterestRate);
+
+            case "savings":
+                System.out.println("What is the interest rate?: ");
+                int savingsInterestRate = scan.nextInt();
+               return new SavingsAccount(balance, accountNumber, client, savingsInterestRate);
+
+            default:
+                System.out.println("Wrong");
+                return null;
+        }
     }
-    private Account createBankAccount(int balance, int accountNumber, String clientId){
-        Account account = new BankAccount(
-                balance,
-                accountNumber,
-                clients.get(clientId)
-        );
-        return account;
-    }
-    private Account createCDAccount(int balance, int accountNumber, String clientId){
-        Account account = new CDInvestment(
-                balance,
-                accountNumber,
-                clients.get(clientId)
-        );
-        return account;
-    }
-    private Account createInvestmentAccount(int balance, int accountNumber, String clientId){
-        Account account = new InvestmentAccount(
-                balance,
-                accountNumber,
-                clients.get(clientId)
-        );
-        return account;
-    }
-    private Account createSavingsAccount(int balance, int accountNumber, String clientId){
-        Account account = new SavingsAccount(
-                balance,
-                accountNumber,
-                clients.get(clientId)
-        );
-        return account;
-    }
+
 }
